@@ -20,7 +20,7 @@ function App() {
                 <div className="container">
                   <FeedbackForm />
                   <FeedbackStats />
-                  <FeedbackList  />
+                  <FeedbackList />
                 </div>
                 <AboutIconLink />
               </>
