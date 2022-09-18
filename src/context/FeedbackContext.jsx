@@ -1,31 +1,29 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 const FeedbackContext = createContext();
 
 export const FeedbackProvider = ({ children }) => {
-  const [feedback, setFeedback] = useState([
-    {
-      id: 1,
-      rating: 10,
-      text: 'Lorem ipsum dolor sit amet consectetur adipisicing el. consequuntur vel vitae commodi alias voluptatem est voluptatum ipsa quae.',
-    },
-    {
-      id: 2,
-      rating: 9,
-      text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. consequuntur vel vitae commodi alias voluptatem est voluptatum ipsa quae.',
-    },
-    {
-      id: 3,
-      rating: 8,
-      text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. consequuntur vel vitae commodi alias voluptatem est voluptatum ipsa quae.',
-    },
-  ]);
-
+  const [feedback, setFeedback] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [feedbackEdit, setFeedbackEdit] = useState({
     item: {},
     edit: false,
   });
+
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  //fetch feedback
+  const fetchFeedback = async () => {
+    const response = await fetch(
+      `http://localhost:5000/feedback?_sort=id&&_order=desc`
+    );
+    const data = await response.json();
+    setFeedback(data);
+    setIsLoading(false);
+  };
 
   //add feedback
   const addFeedback = (newFeedback) => {
@@ -44,7 +42,7 @@ export const FeedbackProvider = ({ children }) => {
   const updateFeedback = (id, updItem) => {
     setFeedback(
       feedback.map((item) => (item.id === id ? { ...item, ...updItem } : item))
-    ); //merging item and updated item, 
+    ); //merging item and updated item,
     //updItem replaces that item if it has same properties/values since we use spread to merge (refer onenote)
   };
 
@@ -61,6 +59,7 @@ export const FeedbackProvider = ({ children }) => {
       value={{
         feedback,
         feedbackEdit,
+        isLoading,
         deleteFeedback,
         addFeedback,
         editFeedback,
